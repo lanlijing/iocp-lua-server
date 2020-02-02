@@ -1,0 +1,2 @@
+cmd.exe /c copy ..\..\bin\lua51d.dll E:\works\code\for_texas_new\product\win32d\server_new\lua51d.dll /y
+cmd.exe /c copy ..\..\bin\lua51d.pdb E:\works\code\for_texas_new\product\win32d\server_new\lua51d.pdb /y
