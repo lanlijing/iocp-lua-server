@@ -1,0 +1,65 @@
+一、有两个可执行程序可以和LUA交互，一个是dbserver.exe，一个是geneserver.exe。两者提供的接口并不相同
+
+二、dbserver.exe调用LUA时是多线程，即有多个线程调用LUA,每个线程有自己的LUA解释器，而geneserver.exe调用LUA是单线程
+
+三、dbserver.exe的C++向LUA提供了两类接口，
+1、DBLib(调用时用.如DBLib.showMsg)
+   函数:showMsg 打印信息到C++程序的文本框
+2、sqlProcess 对象(调用函数时用:,如sqlProcess:readRecvByte)
+   getProcessId 得到当前sql处理对象的ID   
+   execSql 执行SQL,只有一条语句
+   execSql2 执行SQL，有两条语句，一般用于执行存储过程
+   execSqlNoRet 执行SQL，一条语句，不需要返回结果
+   setReadPos 设置从接收字节流中读取位置
+   readRecvByte 从接收字节流读取一个BYTE
+   readRecvShort 从接收字节流读取一个short
+   readRecvInt 从接收字节流读取一个int
+   readRecvUint32 从接收字节流读取一个uint32
+   readRecvDouble 从接收字节流读取一个Double
+   readRecvString 从接收字节流读取一个字符串
+   writeSendByte 向发送字节流写入一个BYTE
+   writeSendShort 向发送字节流写入一个short
+   writeSendInt 向发送字节流写入一个int
+   writeSendUint32 向发送字节流写入一个uint32
+   writeSendDouble 向发送字节流写入一个double
+   writeSendString 向发送字节流写入
+   beginSendBuf 开始进行发送字节流初始化,传入userid和msgid
+   endSendBuf 发送字节流写入结束
+   sendDBufToProxySvr 向网关服发送消息
+   sendDBufToGameSvr 向游戏服发送消息
+
+四、dbserver.exe C++会调用到LUA的函数是
+  OnLuaInit
+  OnNetMsg
+
+四、geneserver.exe的C++向LUA提供了一个接品库：
+WSLuaCpp
+   getTickCount 得到当前毫秒数
+   setCaption 设置可执行程序的窗口标题
+   showMsg
+   setReadPos
+   readRecvByte
+   readRecvShort
+   readRecvInt
+   readRecvUint32
+   readRecvDouble
+   readRecvString
+   writeSendByte
+   writeSendShort
+   writeSendInt
+   writeSendUint32
+   writeSendDouble
+   writeSendString
+   beginSendBuf
+   endSendBuf
+   sendProxySvrBuf  向网关服发送消息
+   sendGameSvrBuf   向游戏服发送消息
+   sendDBSvrBuf     向DB服发送消息
+
+五、geneserver.exe 中LUA向C++提供的接口
+    OnGameInit
+    OnProxySvrMsg
+    OnDBSvrMsg
+    OnGameFrame
+    OnGameExit
+   
