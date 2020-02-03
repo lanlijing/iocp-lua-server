@@ -1,0 +1,78 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="app">
+      <UniqueIdentifier>{bd36b5af-451d-401b-a0e1-e9ba347680ba}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="common">
+      <UniqueIdentifier>{5dc2a098-071c-4da5-a7c2-07a550accbc2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src">
+      <UniqueIdentifier>{2648ea55-15c8-4bcd-8ede-c3003a847c67}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="stdafx.cpp">
+      <Filter>app</Filter>
+    </ClCompile>
+    <ClCompile Include="DNetStream.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="DBackupLinkerThread.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="DClientConn.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="DIOCPLinker.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="DIOCPServer.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="DNetObjectPool.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="DNetWorkBase.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="stdafx.h">
+      <Filter>app</Filter>
+    </ClInclude>
+    <ClInclude Include="targetver.h">
+      <Filter>app</Filter>
+    </ClInclude>
+    <ClInclude Include="DBackupLinkerThread.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\common\diocp\DNetWorkBase.h">
+      <Filter>common</Filter>
+    </ClInclude>
+    <ClInclude Include="DClientConn.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="DIOCPLinker.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="DIOCPServer.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="DNetObjectPool.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="DNetStream.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="INetStreamObj.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="stIoData.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\common\diocp\DNetMsgBase.h">
+      <Filter>common</Filter>
+    </ClInclude>
+  </ItemGroup>
+</Project>
