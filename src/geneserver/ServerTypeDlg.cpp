@@ -28,3 +28,5 @@ void ServerTypeDlg::DoDataExchange(CDataExchange* pDX)
 	DDX_CBIndex(pDX, IDC_CMBTYPE, m_nServerType);
 }
 
+BEGIN_MESSAGE_MAP(ServerTypeDlg, CDialogEx)
+END_MESSAGE_MAP()

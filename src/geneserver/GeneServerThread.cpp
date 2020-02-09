@@ -130,9 +130,6 @@ BOOL GeneServerThread::StartServer(CgeneserverDlg* pMainDlg)
 		DNetWorkBase::Instance()->InitNetObjectPool(16, 16, 1600);					// 不作服务端,linker设置较小
 	DNetWorkBase::Instance()->SocketStart();		
 	
-	// 开启消息处理线程
-	Start();
-	
 	//创建IOCP服务器	
 	if (m_byType == GeneServerType::eGameServer)
 	{
@@ -143,6 +140,9 @@ BOOL GeneServerThread::StartServer(CgeneserverDlg* pMainDlg)
 			return FALSE;
 		}
 	}
+
+	// 开启消息处理线程
+	Start();
 
 	return TRUE;
 }
@@ -243,7 +243,7 @@ void GeneServerThread::ProcessMsg(DBuf* pMsgBuf)
 	{
 		if (m_byType == GeneServerType::eGameServer)
 		{
-			LuaFunc::CallLuaOnClientMsg(pMsgBuf);
+			LuaFunc::CallLuaOnClientMsg(pMsgBuf, pMsgBuf->m_dwBufFrom);
 		}
 	}
 	else if (byMsgType == DBufType::eNetServerAcceptMsg)			// 只有GameServer时有
@@ -309,8 +309,10 @@ void GeneServerThread::GameServerReConn()
 
 	if (m_dwGameServerConn == 0)
 		DAppLog::Instance()->Info(TRUE, "连接游戏服失败,正在尝试重连");
-	else
+	else {
 		DAppLog::Instance()->Info(TRUE, "游戏服连接成功");
+		LuaFunc::CallLuaOnGameSvrConnect();
+	}
 }
 
 string GeneServerThread::GetConfigFileName(string& strConfig)

@@ -28,9 +28,8 @@ static const struct luaL_reg Buflib[] =
 	{ "beginSendBuf", LuaFunc::BeginSendDBuf },
 	{ "endSendBuf", LuaFunc::EndSendDBuf },
 	{ "cloneRecvBufToSend", LuaFunc::CloneRecvDBufToSend },
-	{ "sendProxySvrBuf", LuaFunc::SendDBufToProxySvr },
-	{ "sendGameSvrBuf", LuaFunc::SendDBufToGameSvr },
-	{ "sendDBSvrBuf", LuaFunc::SendDBufToDBSvr },
+	{ "sendDBufToGameSvr", LuaFunc::SendDBufToGameSvr },
+	{ "sendDBufToClient", LuaFunc::SendDBufToClient },
 	{ 0, 0 }
 };
 
@@ -218,6 +217,7 @@ int LuaFunc::WriteSendDBufInt(lua_State* L)
 	lua_pushboolean(L, p->WriteInteger(n));
 	return 1;
 }
+
 int LuaFunc::WriteSendDBufUint32(lua_State* L)
 {
 	DBuf* p = LuaMgr::Instance()->GetSendDBuf();
@@ -225,6 +225,7 @@ int LuaFunc::WriteSendDBufUint32(lua_State* L)
 	lua_pushboolean(L, p->WriteUint32(un));
 	return 1;
 }
+
 int LuaFunc::WriteSendDBufDouble(lua_State* L)
 {
 	DBuf* p = LuaMgr::Instance()->GetSendDBuf();
@@ -266,26 +267,19 @@ int LuaFunc::CloneRecvDBufToSend(lua_State* L)
 	return 0;
 }
 
-int LuaFunc::SendDBufToProxySvr(lua_State* L)
-{
-	DBuf* p = LuaMgr::Instance()->GetSendDBuf();
-	int nRet = GeneServerThread::Instance()->SendDBufToFarServer(GeneServerType::eProxyServer, p);
-	lua_pushnumber(L, nRet);
-	return 1;
-}
-
 int LuaFunc::SendDBufToGameSvr(lua_State* L)
 {
 	DBuf* p = LuaMgr::Instance()->GetSendDBuf();
-	int nRet = GeneServerThread::Instance()->SendDBufToFarServer(GeneServerType::eGameServer, p);
+	int nRet = GeneServerThread::Instance()->SendDBufToGameServer(p);
 	lua_pushnumber(L, nRet);
 	return 1;
 }
 
-int LuaFunc::SendDBufToDBSvr(lua_State* L)
+int LuaFunc::SendDBufToClient(lua_State* L)
 {
 	DBuf* p = LuaMgr::Instance()->GetSendDBuf();
-	int nRet = GeneServerThread::Instance()->SendDBufToFarServer(GeneServerType::eDBServer, p);
+	UINT32 dwLinkId = (UINT32)luaL_checkint(L, 1);
+	int nRet = GeneServerThread::Instance()->SendDBufToClient(dwLinkId, p);
 	lua_pushnumber(L, nRet);
 	return 1;
 }
@@ -329,63 +323,88 @@ BOOL LuaFunc::CallLuaOnGameFrame()
 	return TRUE;
 }
 
-BOOL LuaFunc::CallLuaOnProxySvrMsg(DBuf* pRecvDBuf)
-{
-	lua_State* L = LuaMgr::Instance()->GetLState();
-	DBuf* pDBuf = LuaMgr::Instance()->GetRecvDBuf();
-	pDBuf->Attach(pRecvDBuf->GetBuf(),pRecvDBuf->GetLength());
-	lua_getglobal(L, "OnProxySvrMsg");
-	if (lua_pcall(L, 0, 0, 0) != 0)
-	{
-		ShowCallLuaError(L,"OnProxySvrMsg");
-		return FALSE;
-	}
-
-	return TRUE;
-}
-
-BOOL LuaFunc::CallLuaOnDBSvrMsg(DBuf* pRecvDBuf)
+BOOL LuaFunc::CallLuaOnGameSvrMsg(DBuf* pRecvDBuf)
 {
 	lua_State* L = LuaMgr::Instance()->GetLState();
 	DBuf* pDBuf = LuaMgr::Instance()->GetRecvDBuf();
 	pDBuf->Attach(pRecvDBuf->GetBuf(), pRecvDBuf->GetLength());
-	lua_getglobal(L, "OnDBSvrMsg");
+	lua_getglobal(L, "OnGameSvrMsg");
 	if (lua_pcall(L, 0, 0, 0) != 0)
 	{
-		ShowCallLuaError(L, "OnDBSvrMsg");
+		ShowCallLuaError(L, "OnGameSvrMsg");
 		return FALSE;
 	}
 
-	return TRUE;
-}
-
-BOOL LuaFunc::CallLuaOnGameSvrMsg(DBuf* pRecvDBuf)
-{
 	return TRUE;
 }
 
 BOOL LuaFunc::CallLuaOnGameSvrConnect()
 {
+	lua_State* L = LuaMgr::Instance()->GetLState();
+	lua_getglobal(L, "OnGameSvrConnect");
+	if (lua_pcall(L, 0, 0, 0) != 0)
+	{
+		ShowCallLuaError(L, "OnGameSvrConnect");
+		return FALSE;
+	}
+
 	return TRUE;
 }
 
 BOOL LuaFunc::CallLuaOnGameSvrDisConnect()
 {
+	lua_State* L = LuaMgr::Instance()->GetLState();
+	lua_getglobal(L, "OnGameSvrDisConnect");
+	if (lua_pcall(L, 0, 0, 0) != 0)
+	{
+		ShowCallLuaError(L, "OnGameSvrDisConnect");
+		return FALSE;
+	}
+
 	return TRUE;
 }
 
-BOOL LuaFunc::CallLuaOnClientMsg(DBuf* pRecvDBuf)
+BOOL LuaFunc::CallLuaOnClientMsg(DBuf* pRecvDBuf, DWORD dwLinkerid)
 {
+	lua_State* L = LuaMgr::Instance()->GetLState();
+	DBuf* pDBuf = LuaMgr::Instance()->GetRecvDBuf();
+	pDBuf->Attach(pRecvDBuf->GetBuf(), pRecvDBuf->GetLength());
+	lua_getglobal(L, "OnClientMsg");
+	lua_pushnumber(L, dwLinkerid);
+	if (lua_pcall(L, 1, 0, 0) != 0)
+	{
+		ShowCallLuaError(L, "OnClientMsg");
+		return FALSE;
+	}
+
 	return TRUE;
 }
 
 BOOL LuaFunc::CallLuaOnClientConnect(DWORD dwLinkerid)
 {
+	lua_State* L = LuaMgr::Instance()->GetLState();
+	lua_getglobal(L, "OnClientConnect");
+	lua_pushnumber(L, dwLinkerid);
+	if (lua_pcall(L, 1, 0, 0) != 0)
+	{
+		ShowCallLuaError(L, "OnClientConnect");
+		return FALSE;
+	}
+
 	return TRUE;
 }
 
 BOOL LuaFunc::CallLuaOnClientDisConnect(DWORD dwLinkerid)
 {
+	lua_State* L = LuaMgr::Instance()->GetLState();
+	lua_getglobal(L, "OnClientDisConnect");
+	lua_pushnumber(L, dwLinkerid);
+	if (lua_pcall(L, 1, 0, 0) != 0)
+	{
+		ShowCallLuaError(L, "OnClientDisConnect");
+		return FALSE;
+	}
+
 	return TRUE;
 }
 

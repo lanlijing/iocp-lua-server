@@ -41,14 +41,12 @@ public:
 	static BOOL CallLuaOnGameInit();
 	static BOOL CallLuaOnGameExit();
 	static BOOL CallLuaOnGameFrame();
-	static BOOL CallLuaOnProxySvrMsg(DBuf* pRecvDBuf);					// 收到的来自网关服的消息
-	static BOOL CallLuaOnDBSvrMsg(DBuf* pRecvDBuf);						// 收到的来自DB服的消息
-	static BOOL CallLuaOnGameSvrMsg(DBuf* pRecvDBuf);					// 来自游戏服的消息
-	static BOOL CallLuaOnGameSvrConnect();								// 游戏服连接上
-	static BOOL CallLuaOnGameSvrDisConnect();							// 游戏服断开
-	static BOOL CallLuaOnClientMsg(DBuf* pRecvDBuf);						// 来自客户端的消息
-	static BOOL CallLuaOnClientConnect(DWORD dwLinkerid);					// 客户端连接上
-	static BOOL CallLuaOnClientDisConnect(DWORD dwLinkerid);				// 客户端关闭
+	static BOOL CallLuaOnGameSvrMsg(DBuf* pRecvDBuf);					// 来自游戏服的消息,仅用在eTestClient
+	static BOOL CallLuaOnGameSvrConnect();								// 游戏服连接上,仅用在eTestClient
+	static BOOL CallLuaOnGameSvrDisConnect();							// 游戏服断开,仅用在eTestClient
+	static BOOL CallLuaOnClientMsg(DBuf* pRecvDBuf, DWORD dwLinkerid);						// 来自客户端的消息,仅用在eGameServer
+	static BOOL CallLuaOnClientConnect(DWORD dwLinkerid);					// 客户端连接上,仅用在eGameServer
+	static BOOL CallLuaOnClientDisConnect(DWORD dwLinkerid);				// 客户端关闭,仅用在eGameServer
 	
 	// lua 调用 C++
 	static int GetTickCount(lua_State* L);
@@ -72,9 +70,8 @@ public:
 	static int EndSendDBuf(lua_State* L);
 	static int CloneRecvDBufToSend(lua_State* L);
 
-	static int SendDBufToProxySvr(lua_State* L);
-	static int SendDBufToGameSvr(lua_State* L);
-	static int SendDBufToDBSvr(lua_State* L);
+	static int SendDBufToGameSvr(lua_State* L);		// 仅用在eTestClient
+	static int SendDBufToClient(lua_State* L);		// 仅用在eGameServer
 	
 	// 其它
 	static void ShowCallLuaError(lua_State* L, const char* szFuncName);

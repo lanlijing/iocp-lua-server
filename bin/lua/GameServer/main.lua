@@ -12,7 +12,7 @@ local MsgDispatch = {
 }
 
 function OnGameInit()
-    cclog("lua 初始化...")
+    cclog("GameServer lua 初始化...")
     WSLuaCpp.setCaption("GameServer")
     
     --设置随机数种子
